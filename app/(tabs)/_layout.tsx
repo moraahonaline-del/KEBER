@@ -16,6 +16,12 @@ export default function TabLayout() {
       label: 'Alerts',
     },
     {
+      name: 'scan',
+      route: '/(tabs)/scan',
+      icon: 'camera.fill',
+      label: 'Scan',
+    },
+    {
       name: 'profile',
       route: '/(tabs)/profile',
       icon: 'info.circle.fill',
@@ -30,6 +36,10 @@ export default function TabLayout() {
         <NativeTabs.Trigger name="(home)">
           <Icon sf="shield.fill" drawable="ic_shield" />
           <Label>Alerts</Label>
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="scan">
+          <Icon sf="camera.fill" drawable="ic_camera" />
+          <Label>Scan</Label>
         </NativeTabs.Trigger>
         <NativeTabs.Trigger name="profile">
           <Icon sf="info.circle.fill" drawable="ic_info" />
@@ -49,6 +59,7 @@ export default function TabLayout() {
         }}
       >
         <Stack.Screen name="(home)" />
+        <Stack.Screen name="scan" />
         <Stack.Screen name="profile" />
       </Stack>
       <FloatingTabBar tabs={tabs} />
