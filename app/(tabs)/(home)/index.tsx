@@ -28,12 +28,12 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// Mock data for amber alerts
+// Mock data for keber alerts
 const mockAlerts = [
   {
     id: '1',
-    type: 'AMBER_ALERT',
-    title: 'AMBER Alert - Missing Child',
+    type: 'KEBER_ALERT',
+    title: 'KEBER Alert - Missing Child',
     childName: 'Sarah Wanjiku',
     age: 8,
     description: 'Missing from Nairobi CBD area. Last seen wearing a blue school uniform.',
@@ -46,8 +46,8 @@ const mockAlerts = [
   },
   {
     id: '2',
-    type: 'AMBER_ALERT',
-    title: 'AMBER Alert - Missing Child',
+    type: 'KEBER_ALERT',
+    title: 'KEBER Alert - Missing Child',
     childName: 'John Kamau',
     age: 12,
     description: 'Missing from Mombasa. Last seen wearing red t-shirt and blue jeans.',
@@ -231,7 +231,7 @@ export default function HomeScreen() {
 
   const renderHeaderRight = () => (
     <Pressable
-      onPress={() => Alert.alert("Information", "This app helps distribute AMBER alerts for missing children in Kenya. Enable notifications to receive immediate alerts.")}
+      onPress={() => Alert.alert("Information", "This app helps distribute KEBER alerts for missing children in Kenya. Enable notifications to receive immediate alerts.")}
       style={{ padding: 6 }}
     >
       <IconSymbol name="info.circle" color={colors.text} size={24} />
@@ -243,7 +243,7 @@ export default function HomeScreen() {
       {Platform.OS === 'ios' && (
         <Stack.Screen
           options={{
-            title: "AMBER Alerts Kenya",
+            title: "KEBER Alerts Kenya",
             headerStyle: { backgroundColor: colors.background },
             headerTintColor: colors.text,
             headerRight: renderHeaderRight,
@@ -264,7 +264,7 @@ export default function HomeScreen() {
           <View style={[commonStyles.row, { justifyContent: 'center', marginBottom: 8 }]}>
             <IconSymbol name="shield.fill" size={32} color={colors.primary} />
             <Text style={[commonStyles.title, { marginLeft: 12, marginBottom: 0 }]}>
-              AMBER Alerts Kenya
+              KEBER Alerts Kenya
             </Text>
           </View>
           <Text style={[commonStyles.textSecondary, commonStyles.centerText]}>
@@ -308,7 +308,7 @@ export default function HomeScreen() {
 
         {/* Information Section */}
         <View style={[commonStyles.card, { marginTop: 16 }]}>
-          <Text style={commonStyles.subtitle}>How AMBER Alerts Work</Text>
+          <Text style={commonStyles.subtitle}>How KEBER Alerts Work</Text>
           <Text style={commonStyles.text}>
             • Alerts are issued when a child is abducted and in imminent danger
           </Text>

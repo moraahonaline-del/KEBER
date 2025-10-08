@@ -24,7 +24,7 @@ export default function ProfileScreen() {
         { text: "Cancel", style: "cancel" },
         { 
           text: "Email", 
-          onPress: () => Linking.openURL('mailto:support@amberalerts.ke')
+          onPress: () => Linking.openURL('mailto:support@keberalerts.ke')
         },
         { 
           text: "Phone", 
@@ -88,7 +88,7 @@ export default function ProfileScreen() {
           <View style={[commonStyles.row, { justifyContent: 'center', marginBottom: 8 }]}>
             <IconSymbol name="info.circle.fill" size={32} color={colors.accent} />
             <Text style={[commonStyles.title, { marginLeft: 12, marginBottom: 0 }]}>
-              About AMBER Alerts
+              About KEBER Alerts
             </Text>
           </View>
           <Text style={[commonStyles.textSecondary, commonStyles.centerText]}>
@@ -96,11 +96,11 @@ export default function ProfileScreen() {
           </Text>
         </View>
 
-        {/* What is AMBER Alert */}
+        {/* What is KEBER Alert */}
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>What is an AMBER Alert?</Text>
+          <Text style={commonStyles.subtitle}>What is a KEBER Alert?</Text>
           <Text style={commonStyles.text}>
-            AMBER (America's Missing: Broadcast Emergency Response) Alert is an emergency response system that disseminates information about missing children who are believed to be in imminent danger.
+            KEBER (Kenya Emergency Broadcast Emergency Response) Alert is an emergency response system that disseminates information about missing children who are believed to be in imminent danger.
           </Text>
           <Text style={commonStyles.text}>
             The system was created to help law enforcement agencies and communities work together to find abducted children quickly and safely.
@@ -109,7 +109,7 @@ export default function ProfileScreen() {
 
         {/* How it Works */}
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>How AMBER Alerts Work in Kenya</Text>
+          <Text style={commonStyles.subtitle}>How KEBER Alerts Work in Kenya</Text>
           <View style={commonStyles.row}>
             <IconSymbol name="1.circle.fill" size={20} color={colors.primary} />
             <Text style={[commonStyles.text, { marginLeft: 8, marginBottom: 0, flex: 1 }]}>
@@ -178,9 +178,9 @@ export default function ProfileScreen() {
 
         {/* Statistics */}
         <View style={commonStyles.card}>
-          <Text style={commonStyles.subtitle}>AMBER Alert Success</Text>
+          <Text style={commonStyles.subtitle}>KEBER Alert Success</Text>
           <Text style={commonStyles.text}>
-            Since its inception, AMBER Alerts have helped recover thousands of missing children worldwide. The system's success depends on community participation and quick response times.
+            Since its inception, KEBER Alerts have helped recover thousands of missing children worldwide. The system's success depends on community participation and quick response times.
           </Text>
           <View style={[commonStyles.row, { justifyContent: 'space-around', marginTop: 16 }]}>
             <View style={{ alignItems: 'center' }}>
@@ -271,9 +271,9 @@ export default function ProfileScreen() {
             <IconSymbol name="envelope.fill" size={20} color={colors.accent} />
             <View style={{ flex: 1, marginLeft: 8 }}>
               <Text style={[commonStyles.text, { marginBottom: 0, fontWeight: '600' }]}>
-                AMBER Alert Support
+                KEBER Alert Support
               </Text>
-              <Text style={commonStyles.textSecondary}>support@amberalerts.ke</Text>
+              <Text style={commonStyles.textSecondary}>support@keberalerts.ke</Text>
             </View>
             <IconSymbol name="chevron.right" size={16} color={colors.textSecondary} />
           </Pressable>
