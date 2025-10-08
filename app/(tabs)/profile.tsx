@@ -100,7 +100,7 @@ export default function ProfileScreen() {
         <View style={commonStyles.card}>
           <Text style={commonStyles.subtitle}>What is a KEBER Alert?</Text>
           <Text style={commonStyles.text}>
-            KEBER (Kenya Emergency Broadcast Emergency Response) Alert is an emergency response system that disseminates information about missing children who are believed to be in imminent danger.
+            KEBER (Kenya Broadcast Emergency Response) Alert is an emergency response system that disseminates information about missing children who are believed to be in imminent danger.
           </Text>
           <Text style={commonStyles.text}>
             The system was created to help law enforcement agencies and communities work together to find abducted children quickly and safely.

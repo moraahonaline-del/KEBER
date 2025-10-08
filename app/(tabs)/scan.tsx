@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Platform,
   Pressable,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
@@ -52,6 +53,36 @@ const mockMissingChildren: ScanResult[] = [
     photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face',
     status: 'missing',
   },
+  {
+    id: '3',
+    name: 'Grace Wanjiku',
+    age: 10,
+    lastSeen: '2024-01-12',
+    location: 'Kisumu',
+    confidence: 0.78,
+    photo: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=200&h=200&fit=crop&crop=face',
+    status: 'missing',
+  },
+  {
+    id: '4',
+    name: 'David Kimani',
+    age: 9,
+    lastSeen: '2024-01-08',
+    location: 'Nakuru',
+    confidence: 0.85,
+    photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face',
+    status: 'missing',
+  },
+  {
+    id: '5',
+    name: 'Amina Hassan',
+    age: 7,
+    lastSeen: '2024-01-14',
+    location: 'Eldoret',
+    confidence: 0.91,
+    photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face',
+    status: 'missing',
+  },
 ];
 
 export default function ScanScreen() {
@@ -59,10 +90,28 @@ export default function ScanScreen() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanResults, setScanResults] = useState<ScanResult[]>([]);
   const [hasScanned, setHasScanned] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredChildren, setFilteredChildren] = useState<ScanResult[]>(mockMissingChildren);
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   useEffect(() => {
     console.log('ScanScreen mounted');
   }, []);
+
+  useEffect(() => {
+    // Filter children based on search query
+    if (searchQuery.trim() === '') {
+      setFilteredChildren(mockMissingChildren);
+      setShowSearchResults(false);
+    } else {
+      const filtered = mockMissingChildren.filter(child =>
+        child.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        child.location.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredChildren(filtered);
+      setShowSearchResults(true);
+    }
+  }, [searchQuery]);
 
   const requestCameraPermission = async () => {
     try {
@@ -104,6 +153,7 @@ export default function ScanScreen() {
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const imageUri = result.assets[0].uri;
         setCapturedImage(imageUri);
+        setShowSearchResults(false);
         console.log('Image captured:', imageUri);
       }
     } catch (error) {
@@ -128,6 +178,7 @@ export default function ScanScreen() {
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const imageUri = result.assets[0].uri;
         setCapturedImage(imageUri);
+        setShowSearchResults(false);
         console.log('Image selected:', imageUri);
       }
     } catch (error) {
@@ -146,6 +197,7 @@ export default function ScanScreen() {
     setIsScanning(true);
     setScanResults([]);
     setHasScanned(false);
+    setShowSearchResults(false);
 
     try {
       // Simulate scanning process with a delay
@@ -170,6 +222,7 @@ export default function ScanScreen() {
     setCapturedImage(null);
     setScanResults([]);
     setHasScanned(false);
+    setShowSearchResults(searchQuery.trim() !== '');
   };
 
   const reportMatch = (result: ScanResult) => {
@@ -193,13 +246,18 @@ export default function ScanScreen() {
     );
   };
 
+  const clearSearch = () => {
+    setSearchQuery('');
+    setShowSearchResults(false);
+  };
+
   const renderHeaderRight = () => (
     <Pressable
       style={styles.headerButton}
       onPress={() => {
         Alert.alert(
           'How Scanning Works',
-          'Take a photo of a child you believe might be missing. The app will compare the photo against our database of missing children reports. If there are potential matches, you can report them to authorities.\n\nNote: This feature requires an active internet connection and backend services to function properly.',
+          'Take a photo of a child you believe might be missing. The app will compare the photo against our database of missing children reports. If there are potential matches, you can report them to authorities.\n\nYou can also search for missing children by name or location using the search bar.\n\nNote: This feature requires an active internet connection and backend services to function properly.',
           [{ text: 'Got it' }]
         );
       }}
@@ -207,6 +265,47 @@ export default function ScanScreen() {
       <IconSymbol name="questionmark.circle" size={24} color={colors.primary} />
     </Pressable>
   );
+
+  const renderSearchResults = () => {
+    if (!showSearchResults) return null;
+
+    return (
+      <View style={styles.searchResultsContainer}>
+        <Text style={styles.searchResultsTitle}>
+          {filteredChildren.length === 0 ? 'No Results Found' : `${filteredChildren.length} Child${filteredChildren.length > 1 ? 'ren' : ''} Found`}
+        </Text>
+        
+        {filteredChildren.length === 0 ? (
+          <View style={styles.noSearchResultsContainer}>
+            <IconSymbol name="magnifyingglass" size={48} color={colors.textSecondary} />
+            <Text style={styles.noSearchResultsText}>
+              No children found matching "{searchQuery}"
+            </Text>
+          </View>
+        ) : (
+          filteredChildren.map((child) => (
+            <View key={child.id} style={styles.searchResultCard}>
+              <Image source={{ uri: child.photo }} style={styles.searchResultPhoto} />
+              <View style={styles.searchResultInfo}>
+                <Text style={styles.searchResultName}>{child.name}</Text>
+                <Text style={styles.searchResultDetails}>Age: {child.age}</Text>
+                <Text style={styles.searchResultDetails}>Last seen: {child.lastSeen}</Text>
+                <Text style={styles.searchResultDetails}>Location: {child.location}</Text>
+              </View>
+              <Button
+                variant="secondary"
+                size="small"
+                onPress={() => reportMatch(child)}
+                style={styles.reportButton}
+              >
+                Report Sighting
+              </Button>
+            </View>
+          ))
+        )}
+      </View>
+    );
+  };
 
   const renderScanResults = () => {
     if (!hasScanned) return null;
@@ -275,100 +374,127 @@ export default function ScanScreen() {
         <View style={styles.section}>
           <Text style={commonStyles.title}>Photo Scanner</Text>
           <Text style={commonStyles.textSecondary}>
-            Take or select a photo to scan against missing children records
+            Take or select a photo to scan against missing children records, or search by name
           </Text>
         </View>
 
-        <BackendNotice
-          feature="photo scanning"
-          description="Full scanning functionality requires Supabase integration for image storage and comparison services."
-        />
-
-        {!capturedImage ? (
-          <View style={styles.cameraSection}>
-            <View style={styles.cameraPlaceholder}>
-              <IconSymbol name="camera.fill" size={64} color={colors.textSecondary} />
-              <Text style={styles.placeholderText}>No photo selected</Text>
-            </View>
-            
-            <View style={styles.buttonGroup}>
-              <Button
-                variant="primary"
-                onPress={takePhoto}
-                style={styles.actionButton}
-              >
-                <IconSymbol name="camera" size={20} color={colors.card} style={styles.buttonIcon} />
-                Take Photo
-              </Button>
-              
-              <Button
-                variant="secondary"
-                onPress={selectFromGallery}
-                style={styles.actionButton}
-              >
-                <IconSymbol name="photo" size={20} color={colors.card} style={styles.buttonIcon} />
-                Select from Gallery
-              </Button>
-            </View>
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInputContainer}>
+            <IconSymbol name="magnifyingglass" size={20} color={colors.textSecondary} style={styles.searchIcon} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search for missing children by name or location..."
+              placeholderTextColor={colors.textSecondary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              returnKeyType="search"
+            />
+            {searchQuery.length > 0 && (
+              <Pressable onPress={clearSearch} style={styles.clearButton}>
+                <IconSymbol name="xmark.circle.fill" size={20} color={colors.textSecondary} />
+              </Pressable>
+            )}
           </View>
-        ) : (
-          <View style={styles.imageSection}>
-            <View style={styles.imageContainer}>
-              <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
-            </View>
-            
-            <View style={styles.buttonGroup}>
-              {!isScanning && !hasScanned && (
-                <Button
-                  variant="primary"
-                  onPress={scanImage}
-                  style={styles.actionButton}
-                >
-                  <IconSymbol name="magnifyingglass" size={20} color={colors.card} style={styles.buttonIcon} />
-                  Scan Image
-                </Button>
-              )}
-              
-              <Button
-                variant="secondary"
-                onPress={retakePhoto}
-                style={styles.actionButton}
-                disabled={isScanning}
-              >
-                <IconSymbol name="arrow.clockwise" size={20} color={colors.card} style={styles.buttonIcon} />
-                {hasScanned ? 'Scan Another' : 'Retake Photo'}
-              </Button>
-            </View>
-          </View>
-        )}
-
-        {isScanning && (
-          <View style={styles.scanningContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
-            <Text style={styles.scanningText}>Scanning image...</Text>
-            <Text style={styles.scanningSubtext}>
-              Comparing against missing children database
-            </Text>
-          </View>
-        )}
-
-        {renderScanResults()}
-
-        <View style={styles.infoSection}>
-          <Text style={styles.infoTitle}>Important Information</Text>
-          <Text style={styles.infoText}>
-            • This scanner compares photos against reported missing children
-          </Text>
-          <Text style={styles.infoText}>
-            • Results are estimates and should be verified by authorities
-          </Text>
-          <Text style={styles.infoText}>
-            • Report any potential matches immediately
-          </Text>
-          <Text style={styles.infoText}>
-            • Contact emergency services if you believe a child is in immediate danger
-          </Text>
         </View>
+
+        {/* Search Results */}
+        {renderSearchResults()}
+
+        {!showSearchResults && (
+          <>
+            <BackendNotice
+              feature="photo scanning"
+              description="Full scanning functionality requires Supabase integration for image storage and comparison services."
+            />
+
+            {!capturedImage ? (
+              <View style={styles.cameraSection}>
+                <View style={styles.cameraPlaceholder}>
+                  <IconSymbol name="camera.fill" size={64} color={colors.textSecondary} />
+                  <Text style={styles.placeholderText}>No photo selected</Text>
+                </View>
+                
+                <View style={styles.buttonGroup}>
+                  <Button
+                    variant="primary"
+                    onPress={takePhoto}
+                    style={styles.actionButton}
+                  >
+                    <IconSymbol name="camera" size={20} color={colors.card} style={styles.buttonIcon} />
+                    Take Photo
+                  </Button>
+                  
+                  <Button
+                    variant="secondary"
+                    onPress={selectFromGallery}
+                    style={styles.actionButton}
+                  >
+                    <IconSymbol name="photo" size={20} color={colors.card} style={styles.buttonIcon} />
+                    Select from Gallery
+                  </Button>
+                </View>
+              </View>
+            ) : (
+              <View style={styles.imageSection}>
+                <View style={styles.imageContainer}>
+                  <Image source={{ uri: capturedImage }} style={styles.capturedImage} />
+                </View>
+                
+                <View style={styles.buttonGroup}>
+                  {!isScanning && !hasScanned && (
+                    <Button
+                      variant="primary"
+                      onPress={scanImage}
+                      style={styles.actionButton}
+                    >
+                      <IconSymbol name="magnifyingglass" size={20} color={colors.card} style={styles.buttonIcon} />
+                      Scan Image
+                    </Button>
+                  )}
+                  
+                  <Button
+                    variant="secondary"
+                    onPress={retakePhoto}
+                    style={styles.actionButton}
+                    disabled={isScanning}
+                  >
+                    <IconSymbol name="arrow.clockwise" size={20} color={colors.card} style={styles.buttonIcon} />
+                    {hasScanned ? 'Scan Another' : 'Retake Photo'}
+                  </Button>
+                </View>
+              </View>
+            )}
+
+            {isScanning && (
+              <View style={styles.scanningContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text style={styles.scanningText}>Scanning image...</Text>
+                <Text style={styles.scanningSubtext}>
+                  Comparing against missing children database
+                </Text>
+              </View>
+            )}
+
+            {renderScanResults()}
+
+            <View style={styles.infoSection}>
+              <Text style={styles.infoTitle}>Important Information</Text>
+              <Text style={styles.infoText}>
+                • This scanner compares photos against reported missing children
+              </Text>
+              <Text style={styles.infoText}>
+                • Results are estimates and should be verified by authorities
+              </Text>
+              <Text style={styles.infoText}>
+                • Report any potential matches immediately
+              </Text>
+              <Text style={styles.infoText}>
+                • Contact emergency services if you believe a child is in immediate danger
+              </Text>
+            </View>
+          </>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -390,6 +516,87 @@ const styles = StyleSheet.create({
   headerButton: {
     padding: 8,
     marginRight: 8,
+  },
+  searchContainer: {
+    marginBottom: 24,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: colors.border || colors.textSecondary + '20',
+    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
+    elevation: 2,
+  },
+  searchIcon: {
+    marginRight: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.text,
+    paddingVertical: 0,
+  },
+  clearButton: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  searchResultsContainer: {
+    marginBottom: 24,
+  },
+  searchResultsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 16,
+  },
+  noSearchResultsContainer: {
+    alignItems: 'center',
+    padding: 32,
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+    elevation: 3,
+  },
+  noSearchResultsText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  searchResultCard: {
+    backgroundColor: colors.card,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.1)',
+    elevation: 3,
+  },
+  searchResultPhoto: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 16,
+  },
+  searchResultInfo: {
+    flex: 1,
+  },
+  searchResultName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  searchResultDetails: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginBottom: 2,
   },
   cameraSection: {
     alignItems: 'center',
